@@ -24,7 +24,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     outputs:
-      script-file: ${{steps.aza.outputs.uza}}
+      script-file: "${{ steps.aza.outputs.uza }}"
     steps:
       - name: Get code
         uses: actions/checkout@v3
@@ -34,7 +34,7 @@ jobs:
         run: npm run build
       - name: Publish value
         id: aza
-        run: find dist/assets/*.js -type f -execdir echo 'uza={}' >> GITHUB_OUTPUT ';'
+        run: find dist/assets/*.js -type f -execdir echo 'uza={}' >> $GITHUB_OUTPUT ';'
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
