@@ -24,7 +24,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     outputs:
-      script-file: "${{ steps.aza.outputs.uza }}"
+      script-file: ${{ steps.aza.outputs.uza }}
     steps:
       - name: Get code
         uses: actions/checkout@v3
@@ -49,6 +49,6 @@ jobs:
         with:
           name: dist-files
       - name: Output file name
-        run: echo "${{needs.build.outputs.script-file}}"
+        run: echo ${{ needs.build.outputs.script-file }}
       - name: Deploy
         run: echo "Deploying..."
