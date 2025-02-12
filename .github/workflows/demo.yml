@@ -36,7 +36,7 @@ jobs:
         id: aza
         run: find dist/assets/*.js -type f -execdir echo 'uza={}' >> $GITHUB_OUTPUT ';'
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist-files
           path: dist
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: dist-files
       - name: Output file name
