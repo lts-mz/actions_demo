@@ -39,7 +39,7 @@ jobs:
           echo "TENANT=$TENANT" >> $GITHUB_ENV
           echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
   build:
-    needs: test
+    needs: [test, prepare]
     runs-on: ubuntu-latest
     outputs:
       script-file: ${{ steps.aza.outputs.uza }}
