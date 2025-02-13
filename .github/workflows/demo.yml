@@ -64,7 +64,7 @@ jobs:
       - name: Write info.txt
         if: contains(github.ref, 'REL/')
         run: |
-          INFO="Frontend Info:\nBranch: ${GITHUB_REF#refs/heads/}\nVersion: $CURRENT_VERSION\nBuild Date: $(date)\nHash: $GITHUB_SHA"
+          INFO="Frontend Info:\nBranch: ${GITHUB_REF#refs/heads/}\nVersion: ${{ env.CURRENT_VERSION }}\nBuild Date: $(date)\nHash: $GITHUB_SHA"
           echo -e $INFO > ./dist/info.txt
       - name: Upload artifact
         uses: actions/upload-artifact@v4
