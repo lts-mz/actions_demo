@@ -3,9 +3,12 @@ on:
   push:
     branches:
       - '**'
+  pull_request:
+    branches:
+      - '**'
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest 
     steps:
       - name: Get code
         uses: actions/checkout@v3
@@ -22,9 +25,15 @@ jobs:
         run: npm run lint
       - name: Test code
         run: npm run test
+      - name: Send error message to Slack
+        if: failure()
+        run: |
+         echo "Error: ${{ job.status }} on ${{ github.repository }} ${{ github.sha }} by ${{ github.actor }}" 
+        #  | curl -X POST -H 'Content-type: application/json' --data @- $SLACK_WEBHOOK
   extract-meta:
     needs: test
     runs-on: ubuntu-latest
+    if: contains(github.ref, 'REL/')
     outputs:
       version: ${{ steps.meta.outputs.CURRENT_VERSION }}
       tenant: ${{ steps.meta.outputs.TENANT }}
@@ -33,7 +42,6 @@ jobs:
       - name: Get code
         uses: actions/checkout@v3
       - name: Get build meta info
-        if: contains(github.ref, 'REL/')
         id: meta
         run: |
           PACKAGE_JSON=$(cat package.json)
