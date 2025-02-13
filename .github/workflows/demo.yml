@@ -22,6 +22,22 @@ jobs:
         run: npm run lint
       - name: Test code
         run: npm run test
+  prepare:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get build meta info
+        if: contains(github.ref, 'REL/')
+        id: meta
+        run: |
+          PACKAGE_JSON=$(cat package.json)
+          CURRENT_VERSION=$(echo $PACKAGE_JSON | jq -r '.version')
+          IFS='/' read -r -a BRANCH_PARTS <<< "${GITHUB_REF#refs/heads/}"
+          TENANT=${BRANCH_PARTS[1]}
+          ENVIRONMENT=${BRANCH_PARTS[2]}
+          echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
+          echo "TENANT=$TENANT" >> $GITHUB_ENV
+          echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
   build:
     needs: test
     runs-on: ubuntu-latest
@@ -42,6 +58,11 @@ jobs:
         with:
           name: dist-files
           path: dist
+      - name: Write info.txt
+        if: contains(github.ref, 'REL/')
+        run: |
+          INFO="Frontend Info:\nBranch: ${GITHUB_REF#refs/heads/}\nVersion: $CURRENT_VERSION\nBuild Date: $(date)\nHash: $GITHUB_SHA"
+          echo -e $INFO > ./dist/info.txt
   deploy:
     needs: build
     runs-on: ubuntu-latest
