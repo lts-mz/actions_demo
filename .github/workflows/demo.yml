@@ -55,16 +55,16 @@ jobs:
       - name: Publish value
         id: aza
         run: find dist/assets/*.js -type f -execdir echo 'uza={}' >> $GITHUB_OUTPUT ';'
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-files
-          path: dist
       - name: Write info.txt
         if: contains(github.ref, 'REL/')
         run: |
           INFO="Frontend Info:\nBranch: ${GITHUB_REF#refs/heads/}\nVersion: $CURRENT_VERSION\nBuild Date: $(date)\nHash: $GITHUB_SHA"
           echo -e $INFO > ./dist/info.txt
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-files
+          path: dist
   deploy:
     needs: build
     runs-on: ubuntu-latest
