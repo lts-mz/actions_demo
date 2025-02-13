@@ -22,9 +22,13 @@ jobs:
         run: npm run lint
       - name: Test code
         run: npm run test
-  prepare:
+  extract-meta:
     needs: test
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.CURRENT_VERSION }}
+      tenant: ${{ steps.meta.outputs.TENANT }}
+      environment: ${{ steps.meta.outputs.ENVIRONMENT }}
     steps:
       - name: Get code
         uses: actions/checkout@v3
@@ -41,10 +45,12 @@ jobs:
           echo "TENANT=$TENANT" >> $GITHUB_ENV
           echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
   build:
-    needs: [test, prepare]
+    needs: [test, extract-meta]
     runs-on: ubuntu-latest
     outputs:
       script-file: ${{ steps.aza.outputs.uza }}
+    env:
+      CURRENT_VERSION: ${{ needs.extract-meta.outputs.version }}
     steps:
       - name: Get code
         uses: actions/checkout@v3
