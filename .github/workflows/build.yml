@@ -9,6 +9,7 @@ jobs:
     uses: ./.github/workflows/test.yml
   extract-meta:
     runs-on: ubuntu-latest
+    needs: test
     outputs:
       version: ${{ steps.meta.outputs.CURRENT_VERSION }}
       tenant: ${{ steps.meta.outputs.TENANT }}
@@ -29,6 +30,7 @@ jobs:
           echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_OUTPUT
   build:
     runs-on: ubuntu-latest
+    needs: extract-meta
     outputs:
       script-file: ${{ steps.aza.outputs.uza }}
     env:
