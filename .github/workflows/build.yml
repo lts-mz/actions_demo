@@ -1,11 +1,9 @@
 name: Deploy website
 on:
   workflow_run:
-    workflows: ['Test Before Build']
+    workflows: [.github/workflows/test.yml]
     branches:
       - 'REL/**'
-    types:
-      - completed
 jobs:
   extract-meta:
     runs-on: ubuntu-latest
