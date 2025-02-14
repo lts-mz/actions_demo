@@ -1,9 +1,6 @@
 name: Deploy website
 on:
-  workflow_run:
-    workflows: [.github/workflows/test.yml]
-    branches:
-      - 'REL/**'
+  workflow_call:
 jobs:
   extract-meta:
     runs-on: ubuntu-latest
