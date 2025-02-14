@@ -7,8 +7,12 @@ on:
   workflow_call:
 jobs:
   test:
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
     steps:
+      - name: Set start timestamp
+        id: start
+        run: |
+          printf 'timestamp=%(%s)T\n' >> "$GITHUB_OUTPUT"
       - name: Get code
         uses: actions/checkout@v3
       - name: Cache deps
@@ -27,4 +31,6 @@ jobs:
       - name: Send error message to Slack
         if: failure()
         run: |
-         echo "Error: ${{ job.status }} on ${{ github.repository }} ${{ github.sha }} by ${{ github.actor }}" 
+          printf -v now '%(%s)T'
+          printf -v duration $((now - ${{ steps.start.outputs.timestamp }}))
+          echo  "Error: ${{ job.status }} on ${{ github.repository }} ${{ github.sha }} duration: $duration" 
