@@ -1,0 +1,29 @@
+name: Test Before Build
+on:
+  workflow_call:
+  push:
+    branches:
+      - '!REL/**'
+jobs:
+  test:
+    runs-on: ubuntu-latest 
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache deps
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: node_modules
+          key: deps-node-modules-${{hashFiles('**/package-lock.json')}}
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Lint code
+        run: npm run lint
+      - name: Test code
+        run: npm run test
+      - name: Send error message to Slack
+        if: failure()
+        run: |
+         echo "Error: ${{ job.status }} on ${{ github.repository }} ${{ github.sha }} by ${{ github.actor }}" 
