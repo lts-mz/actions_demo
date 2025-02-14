@@ -1,36 +1,15 @@
 name: Deploy website
 on:
-  push:
+  workflow_run:
+    workflows: ['Test Before Build']
     branches:
-      - '**'
+      - REL/*
+    types:
+      - completed
 jobs:
-  test:
-    runs-on: ubuntu-latest 
-    steps:
-      - name: Get code
-        uses: actions/checkout@v3
-      - name: Cache deps
-        uses: actions/cache@v3
-        id: cache
-        with:
-          path: node_modules
-          key: deps-node-modules-${{hashFiles('**/package-lock.json')}}
-      - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
-      - name: Lint code
-        run: npm run lint
-      - name: Test code
-        run: npm run test
-      - name: Send error message to Slack
-        if: failure()
-        run: |
-         echo "Error: ${{ job.status }} on ${{ github.repository }} ${{ github.sha }} by ${{ github.actor }}" 
-        #  | curl -X POST -H 'Content-type: application/json' --data @- $SLACK_WEBHOOK
   extract-meta:
-    needs: test
     runs-on: ubuntu-latest
-    if: contains(github.ref, 'REL/')
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     outputs:
       version: ${{ steps.meta.outputs.CURRENT_VERSION }}
       tenant: ${{ steps.meta.outputs.TENANT }}
@@ -50,7 +29,7 @@ jobs:
           echo "TENANT=$TENANT" >> $GITHUB_OUTPUT
           echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_OUTPUT
   build:
-    needs: [test, extract-meta]
+    needs: [extract-meta]
     runs-on: ubuntu-latest
     outputs:
       script-file: ${{ steps.aza.outputs.uza }}
