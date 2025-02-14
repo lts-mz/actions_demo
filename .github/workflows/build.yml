@@ -1,6 +1,5 @@
 name: Deploy website
-on:
-  workflow_call:
+on: workflow_call
 jobs:
   extract-meta:
     runs-on: ubuntu-latest

@@ -24,7 +24,7 @@ jobs:
         run: npm run test
       - name: Build website
         if: success() && contains(github.ref, 'REL/')
-        uses: ./build.yml
+        uses: ./.github/actions/build.yml
       - name: Send error message to Slack
         if: failure()
         run: |
