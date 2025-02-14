@@ -1,9 +1,9 @@
 name: Test Before Build
 on:
+  workflow_call:
   push:
     branches:
       - '!REL/**'
-  workflow_call:
 jobs:
   test:
     runs-on: ubuntu-latest 
@@ -23,9 +23,6 @@ jobs:
         run: npm run lint
       - name: Test code
         run: npm run test
-      - name: Build website
-        if: success() && contains(github.ref, 'REL/')
-        uses: ./.github/actions/build.yml
       - name: Send error message to Slack
         if: failure()
         run: |
