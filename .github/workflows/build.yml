@@ -1,9 +1,13 @@
 name: Deploy website
-on: workflow_call
+on:
+  push:
+    branches:
+      - 'REL/**'
 jobs:
+  job1:
+    uses: ./.github/workflows/test.yml
   extract-meta:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     outputs:
       version: ${{ steps.meta.outputs.CURRENT_VERSION }}
       tenant: ${{ steps.meta.outputs.TENANT }}
@@ -23,7 +27,6 @@ jobs:
           echo "TENANT=$TENANT" >> $GITHUB_OUTPUT
           echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_OUTPUT
   build:
-    needs: [extract-meta]
     runs-on: ubuntu-latest
     outputs:
       script-file: ${{ steps.aza.outputs.uza }}
