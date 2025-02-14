@@ -28,14 +28,21 @@ jobs:
         run: npm run lint
       - name: Test code
         run: npm run test
+      - name: GET all workspace
+        run: | 
+          curl --location --request GET 'https://api.getpostman.com/workspaces' --header 'X-API-Key: ${{ github.token }}' -o workspaces.json
+      - name: read workspace id
+        id: workspace 
+        run: echo "::set-output name=id::$(cat workspaces.json | jq -c '.workspaces[] | select(.name == "My Workspace").id')"
+      - name: print workspace id
+        run: echo ${{ steps.workspace.outputs.id }}
       - name: Get workflow run data
         if: always()
         id: run_data
         run: |
+          echo ${{ github.token }}
+          echo ${{ github.repository }}
           curl -L \
-          --write-out '%{http_code}' \
-          --silent \
-          --output /dev/null \
           -o workspaces.json \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{github.token}}" \
@@ -43,7 +50,7 @@ jobs:
           https://api.github.com/repos/${{github.repository}}/actions/workflows/test/runs \
       - name: Print workflow run data
         run: |
-          echo $(cat workspaces.json | jq -c '.workflow_runs')
+          echo $(cat workspaces.json | jq -c '.')
         # run: |
         #   echo ${{ steps.run_data.outputs.response }} > response.json
       # - name: Send slack notification
