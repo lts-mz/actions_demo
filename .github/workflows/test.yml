@@ -1,9 +1,9 @@
 name: Test Before Build
 on:
-  workflow_call:
   push:
     branches:
       - '!REL/**'
+  workflow_call:
 jobs:
   test:
     runs-on: ubuntu-latest 
