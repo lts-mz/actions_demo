@@ -29,7 +29,7 @@ jobs:
       - name: Test code
         run: npm run test
       - name: Send error message to Slack
-        if: failure()
+        if: always()
         run: |
           printf -v now '%(%s)T'
           printf -v duration $((now - ${{ steps.start.outputs.timestamp }}))
