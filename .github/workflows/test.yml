@@ -32,18 +32,11 @@ jobs:
         if: always()
         id: run_data
         run: |
-          response=(curl -L \
-            --write-out '%{http_code}' \
-            --silent \
-            --output /dev/null \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{github.token}}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/${{github.repository}}/actions/workflows/test/runs)
+          response=(curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{github.token}}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/${{github.repository}}/actions/workflows/test/runs)
           echo "response=$response" >> $GITHUB_OUTPUT
       - name: Print workflow run data
         run: |
-          echo ${{ steps.run_data.outputs.response }} > response.json
+          echo ${{ steps.run_data.outputs.response }}
       # - name: Send slack notification
       #   run: |
       #     WORKFLOW_DATA=$(cat response.json)
