@@ -1,4 +1,4 @@
-name: Test Before Build
+name: test
 on:
   push:
     branches:
@@ -28,9 +28,22 @@ jobs:
         run: npm run lint
       - name: Test code
         run: npm run test
-      - name: Send error message to Slack
+      - name: run curl
         if: always()
         run: |
-          printf -v now '%(%s)T'
-          printf -v duration $((now - ${{ steps.start.outputs.timestamp }}))
-          echo  "Error: ${{ job.status }} on ${{ github.repository }} ${{ github.sha }} duration: $duration" 
+          curl -L \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{github.token}}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          https://api.github.com/repos/${{github.repository}}/actions/workflows/test/runs \
+          -o response.json
+      - name: Send slack notification
+        run: |
+          WORKFLOW_DATA=$(cat response.json)
+          DATA=$(echo $WORKFLOW_DATA | jq -r '.workflow_runs')
+          echo $DATA
+      # - name: Set end timestamp
+      #   run: |
+      #     printf -v now '%(%s)T'
+      #     printf -v duration $((now - ${{ steps.start.outputs.timestamp }}))
+      #     echo  "Error: ${{ job.status }} on ${{ github.repository }} ${{ github.sha }} duration: $duration" 
