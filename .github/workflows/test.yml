@@ -28,8 +28,11 @@ jobs:
         run: npm run lint
       - name: Test code
         run: npm run test
+  get_workflow_run_data:
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
       - name: Get workflow run data
-        if: always()
         uses: ./.github/workflows/send_slack_msg.yml
         with:
           run_id: ${{ github.run_id }}
