@@ -30,7 +30,7 @@ jobs:
         run: npm run test
       - name: Get workflow run data
         if: always()
-        uses: ./.github/workflows/send_slack_message.yml
+        uses: ./.github/workflows/send_slack_msg.yml
         with:
           run_id: ${{ github.run_id }}
         # run: |
